@@ -1,53 +1,60 @@
+#include <string>
+#include <vector>
+#include <set>
 #include <iostream>
 #include <sstream>
-#include <string>
 
 using namespace std;
 
-string reverseNumbers(string s) {
+void parseString(const string &src, vector<set<string>> &dst) {
 	int start = 0, end = 0;
-	string sub, res;
+	string sub;
 	stringstream stream;
-	stream << s;
-	while (stream >> sub) {
-		//------
-		sub = string (s.substr(start, end - start)); // for new word
-		if (atoi(sub.c_str()) != 0) reverse(sub.begin(), sub.end()); // reverse if number
-		res.append(sub); 
-		res.append(" ");
-		start = end+1;
-	}
-
-	return res;
-}
-
-string incrementSingles(string s) {
-	int start = 0, end = 0, n;
-	string sub, res;
-	stringstream stream;
-	stream << s;
-	while (stream >> sub) {
-		//sub = string(s.substr(start, end - start)); // for new word
-
-		int freq = 0;
-		for (int i = 0; (i = s.find(sub, i)) != string::npos; i++) freq++; // find freqency
-
-		n = atoi(sub.c_str());
-		if (n != 0 && freq == 1) sub = to_string(n+1); // if single increment
-
-		res.append(sub);
-		res.append(" ");
+	stream << src;
+	while (stream >> sub) { // new word
+		int indicator = 0;
+		for (auto it = dst.begin(); it != dst.end(); it++) { // looking for good set
+			auto s = *it;
+			auto elem = *(s.begin());
+			if (elem.back() == sub.back()) { // if found good set - insert
+				it->insert(sub); //!!!!
+				indicator = 1;
+				break;
+			}
+		}
+		if (indicator == 0) { // if no existing good set
+			auto pos = dst.end();
+			for (auto it = dst.begin(); it != dst.end(); it++) {
+				auto s = *it;
+				auto elem = *(s.begin());
+				if (elem.back() > sub.back()) { // find position for inserting
+					set<string>s1(s);
+					pos = find(dst.begin(), dst.end(), s1);
+					break;
+				}
+			}
+			//insert
+			set<string>s2;
+			s2.insert(sub);
+			dst.insert(pos, s2);
+		}
 		start = end + 1;
 	}
-
-	return res;
 }
 
-
 int main() {
+	vector<set<string>> dst;
+	string st = "this is the malt that lay in the house that jack built";
+	cout << st << endl << endl;
 
-	std::cout << "Reverse Numbers:\n" << "12 abc 3 defg 456\n" << reverseNumbers("12 abc 3 defg 456") << endl << endl;
-	std::cout << "Increment Singles:\n" << "111 abc 2 de 3 f gh 2 ij\n" << incrementSingles("111 abc 2 de 3 f gh 2 ij");
+	parseString(st, dst);
+
+	for (set<string> &mySet : dst) {
+		for (string s : mySet) {
+			cout << s << " ";
+		}
+		cout << "\n";
+	}
 
 	return 0;
 }
