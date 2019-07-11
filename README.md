@@ -1,3 +1,3 @@
 # HSE Algorithmization && Programming Course
 
-Some of my C++ code for university programming course
+Some of my C++ projects for university programming course
